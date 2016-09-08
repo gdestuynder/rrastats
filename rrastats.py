@@ -10,6 +10,7 @@ import hjson, json
 import os
 import sys
 import requests
+from datetime import datetime
 
 class DotDict(dict):
     '''dict.item notation for dict()'s'''
@@ -63,6 +64,16 @@ def main():
         try:
             if (len(rra.metadata.linked_services) > 0):
                 stats.services_linked.nr = stats.services_linked.nr + 1
+        except KeyError:
+            pass
+        try:
+            #Empty risk record, uh-oh
+            if (int(rra.metadata.RRA_version) >= 250) and (len(rra.metadata.risk_record) < 2):
+                dt = datetime.strptime(risk.rra.rra_details.lastmodified.split('.')[0], "%Y-%m-%dT%H:%M:%S")
+                dtn = datetime.now()
+                delta = dtn-dt
+                if (delta.days > 6):
+                    print("Missing RR: {} https://docs.google.com/spreadsheets/d/{} since {} days".format(rra.metadata.service, risk.rra.rra_details.source, delta.days))
         except KeyError:
             pass
         try:
