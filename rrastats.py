@@ -44,7 +44,11 @@ def main():
         v = config.x509cert
     else:
         v = True
-    r = requests.get("{}/api/v1/risks".format(config.host), verify=v)
+    headers = {'SERVICEAPIKEY': config.apikey}
+    r = requests.get("{}/api/v1/risks".format(config.host), verify=v, headers=headers)
+
+    with open('eis_auto_out.json', 'w') as fd:
+        fd.write(r.text)
 
     if (r.status_code != 200):
         raise ApiError("Could not talk to EIS Host {} HTTP errors GET /api/v1/risks: {}".format(config.host, r.status_code))
@@ -63,6 +67,7 @@ def main():
         try:
             if (len(rra.metadata.linked_services) > 0):
                 stats.services_linked.nr = stats.services_linked.nr + 1
+                #print(rra.metadata.service)
         except KeyError:
             pass
         try:
@@ -74,6 +79,7 @@ def main():
         try:
             if (len(rraeis.supporting_system_groups) > 0):
                 stats.have_systems.nr = stats.have_systems.nr + 1
+                #print(rra.metadata.service)
         except KeyError:
             pass
         stats.total = stats.total + 1

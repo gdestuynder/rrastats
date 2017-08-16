@@ -1,6 +1,7 @@
 {
 	/* Your eis-auto setup */
-	"host": "https://example.com:4444"
+	"host": "https://example.com:4444",
+	"apikey": ""
 	/* You can use this for self-signed or CA authorities outside your CA bundle */
 	//"x509cert": "mozilla-root-sha2.crt"
 }
