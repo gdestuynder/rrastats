@@ -56,7 +56,7 @@ def main():
     stats = DotDict({'total': -1,
                 'services_linked': {'nr':-1, 'percent':-1},
                 'with_data_dict_and_default_data': {'nr': -1, 'percent': -1},
-                'have_systems': {'nr': -1, 'percent': -1}})
+                'have_assets': {'nr': -1, 'percent': -1}})
 
     risks = r.json()['risks']
     for risk in risks:
@@ -77,16 +77,16 @@ def main():
         except KeyError:
             pass
         try:
-            if (len(rraeis.supporting_system_groups) > 0):
-                stats.have_systems.nr = stats.have_systems.nr + 1
-                #print(rra.metadata.service)
+            asgrp = rraeis.asset_groups
+            stats.have_assets.nr = stats.have_assets.nr + 1
+            #print(rra.metadata.service)
         except KeyError:
             pass
         stats.total = stats.total + 1
 
     stats = get_percentage(stats, 'services_linked')
     stats = get_percentage(stats, 'with_data_dict_and_default_data')
-    stats = get_percentage(stats, 'have_systems')
+    stats = get_percentage(stats, 'have_assets')
 
     print(stats)
 
