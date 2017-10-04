@@ -6,6 +6,7 @@
 # Copyright (c) 2016 Mozilla Corporation
 # Author: gdestuynder@mozilla.com
 
+import datetime, time
 import hjson, json
 import os
 import sys
@@ -59,11 +60,25 @@ def main():
                 'have_assets': {'nr': -1, 'percent': -1}})
 
     risks = r.json()['risks']
+    # get rra up to that ts
+    # see also https://www.unixtimestamp.com/index.php
+    maxts = time.time() #now
+    #maxts = 1504224000
     for risk in risks:
         risk = DotDict(risk)
         median_risk_label = risk.risk.median_label
         rra = risk.rra.rra_details.details
         rraeis = risk.rra
+
+        try:
+            rrats = datetime.datetime.strptime(rraeis['lastupdated'].split('.')[0], '%Y-%m-%dT%H:%M:%S').timestamp()
+        except KeyError:
+            print (rraeis)
+            raise MissingTimeStampForRRA
+
+        if (rrats > maxts):
+            continue
+
         try:
             if (len(rra.metadata.linked_services) > 0):
                 stats.services_linked.nr = stats.services_linked.nr + 1
